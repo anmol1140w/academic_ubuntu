@@ -1,6 +1,6 @@
 {
-  "name": "Academic OS",
-  "short_name": "Academic OS",
+  "name": "Academic Planner",
+  "short_name": "Academic Planner",
   "description": "Local GATE, DSA, project and internship planner",
   "start_url": "./index.html",
   "display": "standalone",

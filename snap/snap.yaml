@@ -1,0 +1,62 @@
+# Runtime manifest consumed by `snap pack`, not a Snapcraft parts recipe.
+name: academic-planner
+version: '0.2.0'
+summary: Offline academic planning for GATE, DSA and internships
+description: |
+  Academic Planner provides a native Ubuntu window around a local-first planner.
+  Tasks, recurring activities, timers, reviews and backups work without a browser
+  tab or local web server. All planner data stays on this device.
+base: core24
+architectures: [amd64]
+grade: devel
+confinement: strict
+
+apps:
+  academic-planner:
+    command: bin/academic-planner
+    common-id: com.anmol.academicplanner
+    desktop: meta/gui/com.anmol.academicplanner.desktop
+    plugs: [desktop, desktop-legacy, wayland, x11, opengl, gnome-46-2404, gpu-2404, gtk-3-themes, icon-themes]
+    slots: [academic-planner]
+
+plugs:
+  desktop:
+    mount-host-font-cache: false
+  gnome-46-2404:
+    interface: content
+    target: $SNAP/gnome-platform
+    default-provider: gnome-46-2404
+  gpu-2404:
+    interface: content
+    target: $SNAP/gpu-2404
+    default-provider: mesa-2404
+  gtk-3-themes:
+    interface: content
+    target: $SNAP/data-dir/themes
+    default-provider: gtk-common-themes
+  icon-themes:
+    interface: content
+    target: $SNAP/data-dir/icons
+    default-provider: gtk-common-themes
+
+slots:
+  academic-planner:
+    interface: dbus
+    bus: session
+    name: com.anmol.academicplanner
+
+environment:
+  SNAP_DESKTOP_RUNTIME: $SNAP/gnome-platform
+  GTK_USE_PORTAL: '1'
+
+layout:
+  /usr/lib/x86_64-linux-gnu/webkit2gtk-4.1:
+    bind: $SNAP/gnome-platform/usr/lib/x86_64-linux-gnu/webkit2gtk-4.1
+  /usr/share/xml/iso-codes:
+    bind: $SNAP/gnome-platform/usr/share/xml/iso-codes
+  /usr/share/libdrm:
+    bind: $SNAP/gpu-2404/libdrm
+  /usr/share/drirc.d:
+    symlink: $SNAP/gpu-2404/drirc.d
+  /usr/share/X11/XErrorDB:
+    symlink: $SNAP/gpu-2404/X11/XErrorDB

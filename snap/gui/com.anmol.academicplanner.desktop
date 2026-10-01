@@ -1,0 +1,12 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=Academic Planner
+Comment=Offline academic planning, task tracking and focus timers
+Exec=academic-planner
+Icon=${SNAP}/meta/gui/com.anmol.academicplanner.svg
+Terminal=false
+Categories=Office;GTK;
+Keywords=GATE;DSA;Planner;Tasks;Academic;Productivity;
+StartupNotify=true
+StartupWMClass=com.anmol.academicplanner

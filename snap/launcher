@@ -1,0 +1,5 @@
+#!/bin/sh
+set -eu
+exec "$SNAP/gpu-2404/bin/gpu-2404-provider-wrapper" \
+  "$SNAP/gnome-platform/command-chain/desktop-launch" \
+  /usr/bin/python3 "$SNAP/share/academic-planner/desktop/planner.py" "$@"

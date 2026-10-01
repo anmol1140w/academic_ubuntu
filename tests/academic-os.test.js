@@ -265,6 +265,14 @@ test('service worker UI: Refresh messages waiting worker, reloads only after con
   listeners.controllerchange(); assert.equal(reloads, 1);
 });
 
+test('desktop: bundled custom-scheme UI does not register a service worker', () => {
+  const a = app();
+  a.context.location = { protocol: 'planner:' };
+  a.context.navigator = { serviceWorker: { register() { throw Error('Desktop must not register a worker'); },
+    addEventListener() { throw Error('Desktop must not depend on worker lifecycle'); } } };
+  a.run('setupServiceWorkerUpdates()');
+});
+
 (async () => {
   let passed = 0;
   for (const [name, fn] of tests) {

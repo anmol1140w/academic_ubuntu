@@ -857,6 +857,8 @@ function bindEvents() {
 }
 
 function setupServiceWorkerUpdates() {
+  // Desktop assets are bundled and versioned by Snap; custom schemes need no web cache.
+  if (typeof location !== 'undefined' && location.protocol === 'planner:') return;
   if (!('serviceWorker' in navigator)) return;
   let refreshRequested = false;
   navigator.serviceWorker.addEventListener('controllerchange', () => {
