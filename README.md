@@ -51,10 +51,12 @@ The browser launcher is the recommended way to try the project. Planner data is 
 
 ### Install a desktop launcher
 
-The repository includes an application entry file for Ubuntu:
+The repository includes an application entry file for Ubuntu. It launches the
+native GTK desktop application, not the browser server:
 
 ```bash
 cp academic-os.desktop ~/.local/share/applications/
+chmod +x ~/.local/share/applications/academic-os.desktop
 ```
 
 For an optional desktop shortcut:
@@ -62,6 +64,13 @@ For an optional desktop shortcut:
 ```bash
 cp academic-os.desktop ~/Desktop/
 chmod +x ~/Desktop/academic-os.desktop
+```
+
+To remove a manually installed launcher:
+
+```bash
+rm -f ~/.local/share/applications/academic-os.desktop
+rm -f ~/Desktop/academic-os.desktop
 ```
 
 ## Desktop Application
@@ -101,6 +110,18 @@ snap pack --check-skeleton build/snap
 ```
 
 The generated package is written to `dist/`. The application payload is small, but a fresh system also needs the shared `core24`, GNOME, Mesa, and GTK content snaps.
+
+Install or reinstall the locally built Snap with:
+
+```bash
+sudo snap remove academic-planner
+sudo snap install --dangerous dist/academic-planner_0.2.0_amd64.snap
+```
+
+Installing a Snap with the same name does not automatically replace the existing
+installation, so remove it first. A normal `snap remove` preserves the Snap's
+common data; use `sudo snap remove --purge academic-planner` only when that data
+should also be deleted.
 
 The Snap requests no general network, home-directory, system-file, or network-bind access. Native file access is provided through desktop file chooser portals.
 

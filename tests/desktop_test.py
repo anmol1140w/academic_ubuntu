@@ -14,6 +14,11 @@ spec.loader.exec_module(planner)
 
 
 class DesktopBoundaryTests(unittest.TestCase):
+    def test_desktop_entry_uses_native_launcher(self):
+        desktop_entry = (ROOT / 'academic-os.desktop').read_text(encoding='utf-8')
+        self.assertIn('Exec=/home/anmol/academic-planner/desktop/academic-planner', desktop_entry)
+        self.assertNotIn('launch-planner.sh', desktop_entry)
+
     def test_local_asset_allowlist(self):
         self.assertEqual(planner.asset_name(planner.APP_URI), 'index.html')
         for name in planner.ASSETS:
