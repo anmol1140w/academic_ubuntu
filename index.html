@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="theme-color" content="#102a43" />
   <meta name="description" content="A local academic, career and productivity planner for GATE, DSA, projects and internships." />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self';" />
   <link rel="manifest" href="manifest.webmanifest" />
   <link rel="icon" href="icon.svg" type="image/svg+xml" />
   <link rel="stylesheet" href="styles.css" />
@@ -56,6 +57,7 @@
         </div>
       </header>
 
+      <div id="storage-error" class="storage-error hidden" role="alert"></div>
       <div id="app" class="content-wrap"></div>
     </main>
   </div>
@@ -92,6 +94,13 @@
         <label>Measurable output <textarea id="task-output" rows="2" placeholder="What will be visibly finished? e.g. 10 PYQs + error log"></textarea></label>
         <label>Notes <textarea id="task-notes" rows="2" placeholder="Optional context, resource, or definition of done"></textarea></label>
         <div class="recurrence-box">
+          <label id="edit-scope-label" class="hidden">Apply recurring changes to
+            <select id="task-edit-scope">
+              <option value="day">Only this day</option>
+              <option value="future">All future days (including this occurrence)</option>
+            </select>
+            <small>Earlier history and completed or timed occurrences are preserved.</small>
+          </label>
           <label>Repeat
             <select id="task-repeat">
               <option value="none">Does not repeat</option>
@@ -100,6 +109,7 @@
               <option value="weekly">Selected weekdays</option>
             </select>
           </label>
+          <label id="repeat-until-label" class="hidden">Repeat until <input id="task-repeat-until" type="date" /></label>
           <div id="weekday-picker" class="weekday-picker hidden" aria-label="Repeat on weekdays">
             <label><input type="checkbox" value="1" /> Mon</label>
             <label><input type="checkbox" value="2" /> Tue</label>
@@ -119,7 +129,7 @@
   </div>
 
   <input type="file" id="import-file" accept="application/json" class="hidden" />
+  <div class="update-banner hidden" id="update-banner" role="status">New version available, refresh <button class="text-button" id="refresh-version">Refresh</button></div>
   <script src="app.js"></script>
-  <script>if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(() => {});</script>
 </body>
 </html>

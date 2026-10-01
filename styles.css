@@ -98,7 +98,7 @@ h3 { font-size: 15px; margin-bottom: 5px; }
 .ring-placeholder:after { content: ""; width: 41px; height: 41px; border-radius: 50%; position: absolute; background: #fff; }
 .ring-placeholder span { position: relative; z-index: 1; font-size: 11px; font-weight: 800; }
 .progress-track { height: 8px; border-radius: 8px; background: #eaf0f6; overflow: hidden; }
-.progress-fill { height: 100%; border-radius: inherit; background: var(--blue); transition: width .3s ease; }
+.progress-fill { height: 100%; width: 0; border-radius: inherit; background: var(--blue); transition: width .3s ease; }
 .score-card .progress-track { margin: 21px 0 11px; }
 .score-footer { display: flex; justify-content: space-between; color: var(--muted); font-size: 11px; }
 
@@ -112,6 +112,9 @@ h3 { font-size: 15px; margin-bottom: 5px; }
 .task-card { display: grid; grid-template-columns: 25px minmax(0, 1fr) auto; gap: 11px; align-items: start; border: 1px solid var(--line); border-radius: 12px; padding: 12px; background: #fff; transition: .18s ease; }
 .task-card:hover { border-color: #bfd0e4; box-shadow: 0 5px 15px rgba(24,53,88,.05); }
 .task-card.completed { background: #fbfdfc; }
+.task-card.skipped { opacity: .62; background: #f8fafc; }
+.task-card.skipped .task-title { color: var(--muted); text-decoration: line-through; }
+.task-check:disabled { cursor: not-allowed; opacity: .55; }
 .task-card.completed .task-title { color: #7d8b9d; text-decoration: line-through; }
 .task-check { width: 21px; height: 21px; border-radius: 7px; border: 1.5px solid #b9c8d9; background: #fff; display: grid; place-items: center; color: #fff; margin-top: 1px; padding: 0; }
 .task-card.completed .task-check { background: var(--green); border-color: var(--green); }
@@ -153,6 +156,11 @@ h3 { font-size: 15px; margin-bottom: 5px; }
 .mini-stat strong { display: block; font-size: 20px; letter-spacing: -.5px; }
 .mini-stat span { display: block; color: var(--muted); font-size: 10px; margin-top: 4px; }
 .callout { padding: 12px; border-radius: 10px; border-left: 3px solid var(--blue); background: var(--blue-soft); color: #315274; font-size: 11px; line-height: 1.55; }
+.top-gap { margin-top: 12px; }
+.top-gap-large { margin-top: 14px; }
+.top-gap-panel { margin-top: 25px; }
+.compact-empty { padding: 18px 5px; font-size: 10px; }
+.track-delete { text-align: right; margin-top: 10px; }
 
 .week-grid { display: grid; grid-template-columns: repeat(7, minmax(140px, 1fr)); gap: 9px; overflow-x: auto; padding-bottom: 6px; }
 .week-day { min-height: 390px; border: 1px solid var(--line); border-radius: 12px; background: var(--surface-soft); padding: 10px; }
@@ -208,6 +216,8 @@ td input, td select { max-width: 150px; border: 1px solid var(--line); border-ra
 .setting-row { display: flex; justify-content: space-between; gap: 12px; align-items: center; padding: 12px; border: 1px solid var(--line); border-radius: 10px; background: var(--surface-soft); }
 .setting-row strong { display: block; font-size: 12px; }
 .setting-row span { display: block; color: var(--muted); font-size: 10px; margin-top: 3px; line-height: 1.4; }
+.storage-error { margin: 14px; padding: 12px; border: 1px solid var(--rose); border-radius: 9px; background: var(--rose-soft); color: var(--rose); }
+button:disabled { cursor: not-allowed; opacity: .5; }
 .template-row { display: flex; justify-content: space-between; gap: 10px; align-items: center; padding: 10px 0; border-bottom: 1px solid var(--line); }
 .template-row:last-child { border-bottom: 0; }
 .template-row strong { font-size: 11px; }
@@ -228,6 +238,8 @@ form textarea { resize: vertical; }
 .weekday-picker input { width: auto; margin: 0; }
 .modal-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 20px; }
 
+.update-banner { position: fixed; top: 14px; left: 50%; transform: translateX(-50%); z-index: 40; padding: 9px 12px 9px 15px; border-radius: 9px; background: var(--navy); color: #fff; font-size: 12px; box-shadow: 0 11px 30px rgba(12,32,53,.25); }
+.update-banner .text-button { color: #a9cdfb; padding: 0 0 0 8px; }
 .toast { position: fixed; right: 22px; bottom: 22px; z-index: 50; padding: 11px 14px; border-radius: 9px; background: var(--navy); color: #fff; font-size: 12px; box-shadow: 0 11px 30px rgba(12,32,53,.25); animation: toast-in .2s ease-out; }
 @keyframes toast-in { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
 
