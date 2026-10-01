@@ -1,0 +1,9 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=Academic OS
+Comment=GATE, DSA, project and internship planner
+Exec=/home/anmol/academic-planner/launch-planner.sh
+Icon=/home/anmol/academic-planner/icon.svg
+Terminal=false
+Categories=Education;Office;

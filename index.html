@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#102a43" />
+  <meta name="description" content="A local academic, career and productivity planner for GATE, DSA, projects and internships." />
+  <link rel="manifest" href="manifest.webmanifest" />
+  <link rel="icon" href="icon.svg" type="image/svg+xml" />
+  <link rel="stylesheet" href="styles.css" />
+  <title>Academic OS</title>
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar" aria-label="Primary navigation">
+      <div class="brand">
+        <div class="brand-mark">A</div>
+        <div>
+          <strong>Academic OS</strong>
+          <span>Your execution dashboard</span>
+        </div>
+      </div>
+
+      <nav class="nav-list">
+        <button class="nav-item active" data-view="today"><span>◷</span> Today</button>
+        <button class="nav-item" data-view="week"><span>▦</span> Week</button>
+        <button class="nav-item" data-view="tracks"><span>◈</span> Tracks</button>
+        <button class="nav-item" data-view="review"><span>⌁</span> Review</button>
+        <button class="nav-item" data-view="settings"><span>⚙</span> Settings</button>
+      </nav>
+
+      <div class="sidebar-focus">
+        <div class="eyebrow">Current focus</div>
+        <strong>GATE + DSA consistency</strong>
+        <p>Projects stay small until the exam runway is secure.</p>
+      </div>
+
+      <div class="sidebar-footer">
+        <span class="status-dot"></span>
+        <span>Saved locally in this browser</span>
+      </div>
+    </aside>
+
+    <main class="main-content">
+      <header class="topbar">
+        <div class="mobile-brand"><div class="brand-mark">A</div><strong>Academic OS</strong></div>
+        <div class="date-controls">
+          <button class="icon-button" id="previous-day" title="Previous day" aria-label="Previous day">←</button>
+          <input id="selected-date" type="date" aria-label="Select date" />
+          <button class="icon-button" id="next-day" title="Next day" aria-label="Next day">→</button>
+          <button class="text-button" id="today-button">Today</button>
+        </div>
+        <div class="topbar-actions">
+          <span class="save-indicator" id="save-indicator">Saved</span>
+          <button class="primary-button compact" id="quick-add-button">+ Add task</button>
+        </div>
+      </header>
+
+      <div id="app" class="content-wrap"></div>
+    </main>
+  </div>
+
+  <div class="modal-backdrop hidden" id="task-modal" role="dialog" aria-modal="true" aria-labelledby="task-modal-title">
+    <div class="modal-card">
+      <div class="modal-header">
+        <div>
+          <div class="eyebrow">Planner item</div>
+          <h2 id="task-modal-title">Add a task</h2>
+        </div>
+        <button class="icon-button" id="close-task-modal" aria-label="Close">×</button>
+      </div>
+      <form id="task-form">
+        <input type="hidden" id="task-id" />
+        <div class="form-grid two-col">
+          <label>Task name <input id="task-title" required maxlength="120" placeholder="e.g. Solve 8 DBMS PYQs" /></label>
+          <label>Category
+            <select id="task-category">
+              <option value="gate">GATE</option>
+              <option value="dsa">DSA</option>
+              <option value="project">Project</option>
+              <option value="internship">Internship</option>
+              <option value="college">College</option>
+              <option value="wellbeing">Wellbeing</option>
+              <option value="admin">Admin</option>
+            </select>
+          </label>
+          <label>Date <input id="task-date" type="date" required /></label>
+          <label>Planned minutes <input id="task-duration" type="number" min="5" max="240" step="5" value="60" required /></label>
+          <label>Start time <input id="task-start" type="time" /></label>
+          <label>End time <input id="task-end" type="time" /></label>
+        </div>
+        <label>Measurable output <textarea id="task-output" rows="2" placeholder="What will be visibly finished? e.g. 10 PYQs + error log"></textarea></label>
+        <label>Notes <textarea id="task-notes" rows="2" placeholder="Optional context, resource, or definition of done"></textarea></label>
+        <div class="recurrence-box">
+          <label>Repeat
+            <select id="task-repeat">
+              <option value="none">Does not repeat</option>
+              <option value="daily">Every day</option>
+              <option value="weekdays">Monday–Friday</option>
+              <option value="weekly">Selected weekdays</option>
+            </select>
+          </label>
+          <div id="weekday-picker" class="weekday-picker hidden" aria-label="Repeat on weekdays">
+            <label><input type="checkbox" value="1" /> Mon</label>
+            <label><input type="checkbox" value="2" /> Tue</label>
+            <label><input type="checkbox" value="3" /> Wed</label>
+            <label><input type="checkbox" value="4" /> Thu</label>
+            <label><input type="checkbox" value="5" /> Fri</label>
+            <label><input type="checkbox" value="6" /> Sat</label>
+            <label><input type="checkbox" value="0" /> Sun</label>
+          </div>
+        </div>
+        <div class="modal-actions">
+          <button type="button" class="secondary-button" id="cancel-task">Cancel</button>
+          <button type="submit" class="primary-button">Save task</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <input type="file" id="import-file" accept="application/json" class="hidden" />
+  <script src="app.js"></script>
+  <script>if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(() => {});</script>
+</body>
+</html>
