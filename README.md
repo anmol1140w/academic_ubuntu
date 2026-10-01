@@ -1,157 +1,204 @@
 # Academic Planner
 
-A local planner for GATE, DSA, projects, internships, fixed college commitments, exercise, contests, and daily review.
+Academic Planner is a local-first planning dashboard for students preparing for **GATE**, practising **DSA**, building projects, applying for internships, and managing college commitments.
 
-**Desktop delivery status: candidate built, not yet a verified installed Snap.** The native wrapper and a 60 KiB `.snap` have been created. Installation was denied without administrator authorization; unpackaged WebKit startup was blocked by this host's AppArmor user-namespace policy. Do not treat the desktop/Snap as production-ready until the installed launch and persistence checks below pass. The browser version remains usable and its regressions pass.
+It works offline, stores data on the device, and does not require an account, backend, or subscription. The same planner can run in a browser/PWA or inside a native Ubuntu GTK window.
 
-## Features
+> **Project status:** The browser version is usable and automated browser/core checks pass. The native Ubuntu/Snap delivery is a working candidate build, but installed Snap and real WebKit restart testing still need to be completed on a host where the required sandbox permissions are available.
 
-- Today view with a measurable task output for every block.
-- Week view with automatically generated recurring activities.
-- Add, edit, complete, time, postpone by editing the date, or delete tasks.
-- Daily recurring templates, weekday templates, and custom weekly templates.
-- Timer-based actual focus measurement; running timers survive reloads and include time while the page is closed. Pause/Resume excludes paused time.
-- GATE, DSA, project, internship, and daily-review trackers.
-- Validated JSON export/import, an automatic pre-import backup, and **Settings → Restore last backup**.
-- Recurring tasks support an inclusive end date, **Skip this day**, and **Only this day / All future days** editing. Future edits preserve earlier history and completed/timed occurrences.
-- All data is stored locally in the browser; there is no server or account.
-- Browser PWA/service worker, plus a native GTK/WebKit wrapper and strict Snap packaging candidate.
+## What It Includes
 
-## Desktop application
+- Today, Week, Tracks, Review, and Settings views
+- One-off tasks with category, date, duration, time range, notes, and measurable output
+- Daily, weekday, and custom-weekday recurring tasks
+- Inclusive recurrence end dates
+- Per-day skips and “only this day” or “all future days” editing
+- Focus timers that survive reloads and count elapsed time while the app is closed
+- GATE, DSA, project, internship, and daily-review trackers
+- JSON export/import with validation
+- Automatic pre-import backup and “Restore last backup”
+- Responsive browser UI and a native GTK desktop wrapper
+- Browser PWA support with offline asset caching
 
-**Runtime:** GTK3 + maintained WebKitGTK 4.1, driven by a thin Python/PyGObject wrapper. It reuses the installed GNOME content runtime instead of bundling Electron/Chromium. See [desktop/ARCHITECTURE.md](desktop/ARCHITECTURE.md) for the runtime comparison, offline origin, security limits, and references.
+The planner focuses on recurring activity and manual execution. It does not currently implement XP, levels, coins, bosses, or automatic dynamic rescheduling.
 
-- Application identity: **Academic Planner**, `com.anmol.academicplanner`.
-- Dedicated native window/header bar, minimize/maximize/close, resizable layout, remembered dimensions, single-instance activation, local icon and desktop-specific light/dark styling.
-- Native menu bindings: Ctrl+N (task), Ctrl+1 (Today), Ctrl+2 (Week), Ctrl+E (export), Ctrl+O (import), Ctrl+Q (quit). These are implemented, but interactive desktop verification is blocked here.
-- Loads packaged resources at `planner://app/index.html`. No web server, external browser, remote content or renderer-to-filesystem bridge.
-- Core `app.js`, scheduling, migrations, storage and timers remain shared with the browser. Only service-worker registration is skipped for the packaged `planner:` origin.
-- Current core scheduling is recurring-task mapping and manual task management—not a dynamic rescheduling engine. **XP/levels/coins/bosses/game state are not implemented.** No fake counters or game-persistence claims have been added.
+## Quick Start
 
-### Tested build and launch commands
+### Run in a browser
 
-From `/home/anmol/academic-planner`:
-
-| Exact command executed | Actual result on this machine |
-| --- | --- |
-| `/usr/bin/python3 desktop/build.py` | Builds the whitelisted payload and SVG/PNG icons in 32, 48, 64, 128, 256 and 512 sizes. |
-| `./snap/build.sh` | Success; produces `dist/academic-planner_0.2.0_amd64.snap`. Uses `snap pack`, not Snapcraft. |
-| `snap pack --check-skeleton build/snap` | Success. |
-| `desktop/academic-planner` (with a temporary data directory, Xvfb and a timeout) | Attempted; WebKit failed with `bwrap: setting up uid map: Permission denied`. |
-| `snap install dist/academic-planner_0.2.0_amd64.snap --dangerous` | Attempted; `access denied (try with sudo)`. |
-| `snap run academic-planner` | Attempted; snap is not installed. |
-| `academic-planner --help` | Attempted; command not found because installation did not occur. |
-| `snap remove academic-planner` | Attempted; administrator authorization required. No package was removed. |
-
-No privileged install/removal success is claimed. An administrator must authorize installation before the remaining checks can run. No sandbox-disabling environment variables, root workarounds or global AppArmor/sysctl changes were applied to the desktop application. The source launcher does not work around the host's user-namespace policy.
-
-Build dependencies were **already installed**: Python3, PyGObject, librsvg/cairo (icon generation), `desktop-file-validate`, `snap` and its squashfs packing tools. No packages or global tools were installed. The build currently targets **amd64** only.
-
-The small app snap reuses `core24`, `gnome-46-2404`, `mesa-2404`, and `gtk-common-themes`. Those are sizeable shared dependencies on a fresh system, not included in the 60 KiB figure. Installation/content connections and portal behavior remain unverified. The package requests no `home`, `system-files`, `network` or `network-bind` access.
-
-### Packaging structure
-
-```text
-desktop/planner.py                  native window and WebKit host
-desktop/academic-planner            source/development launcher
-desktop/theme.css                   desktop-only presentation
-desktop/build.py                    payload/icon generation
-snap/snap.yaml                     real runtime manifest for snap pack
-snap/launcher                      GNOME/Mesa runtime startup
-snap/gui/com.anmol.academicplanner.desktop
-build/snap/                        generated package filesystem
-dist/academic-planner_0.2.0_amd64.snap
-```
-
-A Snapcraft parts recipe is intentionally unnecessary: this app has no compilation or package-download stage. `snap pack` consumes the generated `meta/snap.yaml` directly.
-
-### Desktop data safety
-
-- Schema remains **v3** and the key remains **`academic-os-v1`**; this work does not introduce another migration.
-- WebKit's data manager uses `$SNAP_USER_COMMON/com.anmol.academicplanner/webkit/` in Snap, not a revision-specific directory. Source development uses `~/.local/share/com.anmol.academicplanner/` unless explicitly overridden for testing.
-- Snap and browser profiles are separate. Existing browser data is **not automatically copied or deleted**. Transfer it with Export/Import after desktop persistence is verified.
-- Native GTK file choosers handle import/export; in Snap they are configured to use desktop portals. Native file-dialog and round-trip behavior has not yet been certified under confinement.
-- `SNAP_USER_COMMON` persists across refreshes, but is not rolled back with a Snap revert. Download backups before removal/refresh; a Git checkout does not restore browser or WebKit data.
-- The shared stock WebKit engine intentionally relies on outer Snap confinement rather than its nested Bubblewrap sandbox inside Snap. This security tradeoff is documented, not hidden.
-
-### Verification record — Ubuntu 24.04.4 LTS, amd64
-
-| Check | Result |
-| --- | --- |
-| Snap file builds; metadata and desktop entry validation | PASS |
-| Core Node regressions | 21/21 PASS |
-| Isolated Chrome browser checks including offline/CSP/import/timers | 7/7 PASS |
-| Wrapper asset/data-path/packaging boundary tests | 6/6 PASS |
-| Real WebKit desktop restart/persistence smoke test | BLOCKED/FAILED at sandbox startup, not a pass |
-| Snap installation | BLOCKED by administrator authorization |
-| Installed launcher/search/desktop icon, dedicated window, resizing | NOT VERIFIED |
-| Tasks, completion and timers survive actual desktop/Snap restart | NOT VERIFIED |
-| Native/Snap export/import and file portals | NOT VERIFIED |
-| Actual desktop/Snap offline operation and runtime/CSP errors | NOT VERIFIED |
-| XP and game-state persistence | NOT APPLICABLE: feature absent |
-
-The core browser tests do not substitute for WebKit or Snap tests. The wrapper tests do not launch WebKit. `tests/desktop_smoke.py` is a real restart/file-round-trip harness for a temporary unpackaged profile; it leaves sandboxing enabled and currently fails visibly on this host. Its automated chooser responses would not certify desktop portals even on a successful run.
-
-## Existing browser version — launch on Ubuntu
+Requirements: Python 3 and a modern browser.
 
 ```bash
-cd /home/anmol/academic-planner
+git clone https://github.com/anmol1140w/academic_ubuntu.git
+cd academic_ubuntu
 chmod +x launch-planner.sh
 ./launch-planner.sh
 ```
 
-To add a launcher to the desktop/applications menu:
+The launcher starts a local server at:
+
+```text
+http://127.0.0.1:4173/index.html
+```
+
+Use `ACADEMIC_PLANNER_PORT` to select another port:
+
+```bash
+ACADEMIC_PLANNER_PORT=5050 ./launch-planner.sh
+```
+
+The browser launcher is the recommended way to try the project. Planner data is stored in that browser profile using local storage.
+
+### Install a desktop launcher
+
+The repository includes an application entry file for Ubuntu:
 
 ```bash
 cp academic-os.desktop ~/.local/share/applications/
-# Optional desktop shortcut:
+```
+
+For an optional desktop shortcut:
+
+```bash
 cp academic-os.desktop ~/Desktop/
 chmod +x ~/Desktop/academic-os.desktop
 ```
 
-If Ubuntu shows an untrusted launcher warning, right-click it and choose **Allow Launching**.
+## Desktop Application
 
-The launcher starts a local Python HTTP server on `127.0.0.1:4173` and opens the app in the default browser. Set `ACADEMIC_PLANNER_PORT` if that port is already in use.
+The native version uses Python 3, GTK3, PyGObject, and WebKitGTK 4.1. It reuses the browser application rather than maintaining a second planner implementation.
 
-## Important limitation
+The wrapper provides:
 
-This app is local-first. Clearing browser storage, using a different browser profile, or moving to another machine will not carry data automatically. Use **Settings → Export** regularly. The local pre-import backup is not a substitute for a downloaded backup.
+- Native GTK window and header bar
+- Remembered window dimensions
+- Single-instance activation
+- Native import and export file choosers
+- Desktop-specific light/dark styling
+- Keyboard shortcuts
 
-## Reliability and compatibility
+Shortcuts:
 
-- The storage key remains `academic-os-v1`. Schema migrations run sequentially: v1 → v2 → v3. Existing task IDs, times, trackers, reviews, and historical tasks whose templates were deleted are preserved.
-- Saving errors leave changes in memory and show a persistent warning plus **Settings → Storage status**. Export before closing if storage is unavailable. If startup data cannot be read or is from a newer version, automatic writes are blocked so the original stored value is not replaced with a starter plan.
-- Imports reject invalid dates/times, durations, categories, IDs, and field types. A backup is written immediately before every import attempt; if that write fails, import is cancelled. Restore last backup replaces the current planner. There is one backup slot, overwritten by the next import attempt.
-- Timers remain running across import/restore as well as reload. **Pause before exporting an archival backup** if you do not want elapsed wall-clock time counted when restoring it later.
-- To edit a recurring series, open an occurrence and choose **All future days**. The selected occurrence is the boundary. Earlier occurrences and completed/timed history are preserved; unworked generated tasks outside the new schedule are removed. **Only this day** does not change the series. A moved occurrence does not regenerate on its original day.
-- Service-worker updates display **New version available, refresh** and activate on request. Only older Academic OS caches are deleted; localStorage is not cleared. When upgrading from the original cached app (which had no update prompt), close all planner tabs/windows and reopen once so the waiting update can activate. Do not clear site data.
-- The app has no multi-tab conflict resolution. Use one planner tab/window when editing or timing work.
-- Git rollback restores code, not browser data. Export first; the original app does not understand the new pause/recurrence behavior.
+| Shortcut | Action |
+| --- | --- |
+| `Ctrl+N` | New task |
+| `Ctrl+1` | Today |
+| `Ctrl+2` | Week |
+| `Ctrl+E` | Export backup |
+| `Ctrl+O` | Import backup |
+| `Ctrl+Q` | Quit |
 
-## Checks (no dependencies or build tools)
+The desktop application serves bundled resources through the private `planner://app/` URI scheme. It does not start an HTTP server, load remote content, or expose a general JavaScript-to-filesystem bridge.
+
+## Build the Snap
+
+The desktop package currently targets **amd64** and uses `snap pack`, not Snapcraft. Build dependencies are expected to be installed already.
 
 ```bash
-cd /home/anmol/academic-planner
+/usr/bin/python3 desktop/build.py
+./snap/build.sh
+snap pack --check-skeleton build/snap
+```
+
+The generated package is written to `dist/`. The application payload is small, but a fresh system also needs the shared `core24`, GNOME, Mesa, and GTK content snaps.
+
+The Snap requests no general network, home-directory, system-file, or network-bind access. Native file access is provided through desktop file chooser portals.
+
+## Data and Backups
+
+All planner data is local. The browser uses the storage key `academic-os-v1`; the current schema is version 3, with sequential migrations from v1 to v3.
+
+The main state includes:
+
+```text
+tasks, recurring, gate, dsa, projects, applications,
+reviews, timer, selectedDate
+```
+
+The application validates loaded and imported data and protects against corrupt storage, unsupported newer data, and failed writes. If storage cannot be safely read, it avoids replacing the original data with a starter plan.
+
+Use **Settings → Export** regularly. Browser and desktop profiles are separate, so data is not copied automatically between them. Clearing browser storage, changing browser profiles, removing the Snap, or moving to another machine does not preserve planner data.
+
+There is one automatic pre-import backup slot. A new import attempt replaces the previous automatic backup. For archival backups, pause a running timer before exporting so restored data does not continue counting wall-clock time unexpectedly.
+
+## Project Structure
+
+| Path | Purpose |
+| --- | --- |
+| `index.html` | Browser entry point and application shell |
+| `app.js` | State, migrations, scheduling, timers, rendering, and event handling |
+| `styles.css` | Browser UI and responsive layout |
+| `sw.js` | Browser service worker and asset cache |
+| `manifest.webmanifest` | PWA metadata |
+| `desktop/planner.py` | GTK/WebKit native wrapper |
+| `desktop/theme.css` | Desktop-only presentation overrides |
+| `desktop/build.py` | Whitelisted payload and icon generation |
+| `snap/snap.yaml` | Snap runtime manifest |
+| `snap/build.sh` | Snap packaging script |
+| `tests/academic-os.test.js` | Core logic and persistence tests |
+| `tests/browser-smoke.cjs` | Isolated browser smoke tests |
+| `tests/desktop_test.py` | Desktop boundary and packaging tests |
+| `tests/desktop_smoke.py` | Real WebKit restart/persistence harness |
+
+## Testing
+
+Run the core tests:
+
+```bash
 node tests/academic-os.test.js
+```
+
+Run browser smoke tests:
+
+```bash
+node tests/browser-smoke.cjs
+```
+
+Run desktop boundary tests:
+
+```bash
+/usr/bin/python3 tests/desktop_test.py
+```
+
+Run syntax and whitespace checks:
+
+```bash
 node --check app.js
 node --check sw.js
 git diff --check
 ```
 
-The Node test file covers real v1 startup, migrations, date boundaries, recurrence generation/edits/skips, timer reload/pause/resume, storage failure recovery, import/export/restore, validation, and browser/desktop service-worker handling. It uses in-memory browser-boundary stubs, not your real saved data.
-
-Additional commands actually executed:
-
-```bash
-/usr/bin/python3 desktop/build.py
-/usr/bin/python3 tests/desktop_test.py
-node tests/browser-smoke.cjs
-```
-
-The browser harness uses an isolated Chrome profile and a temporary HTTP server **only for browser tests**. Node 22 and Google Chrome are required for that harness; neither is a runtime dependency of the desktop Snap.
-
-The following real desktop smoke command was also executed, but **failed** at the host's WebKit sandbox startup. It remains a useful pending verification step, not a passed check:
+The real desktop smoke test can be run with:
 
 ```bash
 dbus-run-session -- xvfb-run -a /usr/bin/python3 tests/desktop_smoke.py
 ```
+
+On the development host used for this project, that test is blocked by the WebKit sandbox error `bwrap: setting up uid map: Permission denied`. It should not be treated as a passing desktop verification.
+
+## Security and Privacy
+
+- No account or remote service is required.
+- Browser content uses a restrictive Content Security Policy.
+- The desktop wrapper has a fixed resource allowlist.
+- Remote navigation and unexpected popups are denied by the desktop wrapper.
+- WebKit permission requests are denied unless explicitly handled by the application.
+- Snap confinement limits the packaged application’s system access.
+- Import and export use user-selected files through native file choosers.
+
+The desktop WebKit process relies on the outer Snap confinement boundary. This is documented because it is not equivalent to Chromium’s independent renderer sandbox. The project does not disable sandboxing through global host settings or hidden environment workarounds.
+
+## Known Limitations
+
+- No cloud sync or multi-device synchronization
+- No multi-tab conflict resolution
+- Browser and desktop data stores are independent
+- Only one automatic pre-import backup is retained
+- Native Snap installation and portal behavior are not yet verified here
+- Real desktop restart persistence is blocked on the current host
+- Snap packaging is amd64-only
+- Git history restores source code, not browser or WebKit storage
+
+## License
+
+No license file is currently included in the repository. Add the project’s intended license before treating the repository as a reusable open-source package.
